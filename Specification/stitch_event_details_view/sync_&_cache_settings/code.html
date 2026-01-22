@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sync &amp; Cache Settings - Salon der Gedanken</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3211d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#131022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#100d1b] dark:text-white min-h-screen">
+<div class="max-w-md mx-auto min-h-screen flex flex-col pb-10">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-[#100d1b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Sync &amp; Cache Settings</h2>
+</header>
+<div class="px-4">
+<!-- Manual Refresh Action -->
+<div class="mt-4">
+<div class="flex flex-col">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/20 transition-active active:scale-[0.98]">
+<span class="material-symbols-outlined text-white">sync</span>
+<span class="truncate">Manual Refresh</span>
+</button>
+<p class="text-[#594c9a] dark:text-primary/60 text-sm font-medium leading-normal pb-3 pt-2 text-center">Last updated: 10 mins ago</p>
+</div>
+</div>
+<!-- Global Settings Section -->
+<div class="mt-4">
+<h3 class="text-[#100d1b] dark:text-white/80 text-xs font-bold leading-tight tracking-[0.05em] uppercase pb-2 px-1">Global Settings</h3>
+<div class="bg-white dark:bg-white/5 rounded-2xl overflow-hidden divide-y divide-gray-100 dark:divide-white/10">
+<!-- ListItem -->
+<div class="flex items-center gap-4 px-4 min-h-[64px] justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<p class="text-[#100d1b] dark:text-white text-base font-semibold leading-normal">Update Interval</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold">12h</span>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] px-1 pt-2 leading-relaxed">
+                    Determines how frequently the app checks for new cultural and philosophical events.
+                </p>
+</div>
+<!-- Provider Overrides Section -->
+<div class="mt-8">
+<h3 class="text-[#100d1b] dark:text-white/80 text-xs font-bold leading-tight tracking-[0.05em] uppercase pb-2 px-1">Source Overrides</h3>
+<div class="bg-white dark:bg-white/5 rounded-2xl overflow-hidden divide-y divide-gray-100 dark:divide-white/10">
+<!-- ListItem: Provider 1 -->
+<div class="flex items-center gap-4 px-4 min-h-[64px] justify-between">
+<div class="flex flex-col py-3">
+<p class="text-[#100d1b] dark:text-white text-base font-semibold leading-normal">City Archive Events</p>
+<p class="text-xs text-gray-500">Official regional heritage</p>
+</div>
+<div class="flex items-center gap-1 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-full border border-gray-100 dark:border-white/10">
+<span class="text-sm font-medium">Default</span>
+<span class="material-symbols-outlined text-[16px] text-gray-400">unfold_more</span>
+</div>
+</div>
+<!-- ListItem: Provider 2 -->
+<div class="flex items-center gap-4 px-4 min-h-[64px] justify-between">
+<div class="flex flex-col py-3">
+<p class="text-[#100d1b] dark:text-white text-base font-semibold leading-normal">Philosophy Circle</p>
+<p class="text-xs text-gray-500">Weekly discourse sessions</p>
+</div>
+<div class="flex items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+<span class="text-sm font-bold text-primary">6h</span>
+<span class="material-symbols-outlined text-[16px] text-primary">unfold_more</span>
+</div>
+</div>
+<!-- ListItem: Provider 3 -->
+<div class="flex items-center gap-4 px-4 min-h-[64px] justify-between">
+<div class="flex flex-col py-3">
+<p class="text-[#100d1b] dark:text-white text-base font-semibold leading-normal">Arts &amp; Literature Hub</p>
+<p class="text-xs text-gray-500">Gallery openings &amp; readings</p>
+</div>
+<div class="flex items-center gap-1 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-full border border-gray-100 dark:border-white/10">
+<span class="text-sm font-medium">24h</span>
+<span class="material-symbols-outlined text-[16px] text-gray-400">unfold_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Cache Management Section -->
+<div class="mt-8">
+<h3 class="text-[#100d1b] dark:text-white/80 text-xs font-bold leading-tight tracking-[0.05em] uppercase pb-2 px-1">Cache Management</h3>
+<div class="bg-white dark:bg-white/5 rounded-2xl overflow-hidden p-4">
+<div class="flex justify-between items-center mb-4">
+<div>
+<p class="text-[#100d1b] dark:text-white text-base font-semibold leading-normal">Storage Used</p>
+<p class="text-sm text-gray-500">Offline maps, event images, and docs</p>
+</div>
+<p class="text-xl font-bold text-primary">24.5 MB</p>
+</div>
+<button class="w-full flex cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 gap-2 text-sm font-bold leading-normal transition-colors active:bg-red-100">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+<span class="truncate">Clear Local Cache</span>
+</button>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-[13px] px-1 pt-3 text-center">
+                    Clearing cache will remove offline images. You'll need an internet connection to view them again.
+                </p>
+</div>
+</div>
+<!-- Spacer for iOS bottom indicator -->
+<div class="h-8"></div>
+</div>
+</body></html>

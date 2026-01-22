@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Event Details - Salon der Gedanken</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3211d4",
+                        "background": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "text-main": "#1a1a1a",
+                        "text-muted": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        .ios-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-display text-text-main">
+<header class="sticky top-0 z-50 flex items-center bg-white/80 ios-blur p-4 justify-between border-b border-gray-100">
+<div class="flex size-10 items-center justify-center cursor-pointer active:opacity-50 transition-opacity">
+<span class="material-symbols-outlined text-text-main">arrow_back_ios</span>
+</div>
+<h2 class="text-text-main text-base font-bold tracking-tight flex-1 text-center">Event Details</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex items-center justify-center rounded-full h-10 w-10 text-text-main active:bg-gray-100">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</header>
+<main class="max-w-md mx-auto">
+<div class="px-4 py-4">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-gray-100 rounded-2xl aspect-[4/3] shadow-sm relative" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAqzYMs2LZ25Z3YBMhlosmYILhjYhqrEPWdAAMcC8ya3npOSV7up1GX4st-F0WSx-UyS4toGo3NmxsuF4MvdDZlMnHxGfDMSeKR-ZBSwzy_-4R_jfu4URQsJ8s-UvYyZ6JQR2Xb-fTxUNAEt4IIIMAeZ2VYUNpV0yh3LNKhpvrUR6bLaLyhy9BB_rUZqQzl_7cbKPGYZ0pujFjOSRYJwRi4KFC9XHqEgMZ2ad9Bmh48_hLLPIyMPI8tI5cMILuFsnM3bE8Pj7_hZQ");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
+</div>
+<div class="px-5 pt-2">
+<div class="flex flex-wrap gap-2 mb-4">
+<div class="flex h-6 items-center justify-center rounded-full bg-primary/10 px-3 border border-primary/20">
+<p class="text-primary text-[10px] font-bold uppercase tracking-wider">Free of charge</p>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-gray-100 px-3">
+<p class="text-text-muted text-[10px] font-bold uppercase tracking-wider">Philosophy</p>
+</div>
+</div>
+<h1 class="text-text-main tracking-tight text-3xl font-extrabold leading-[1.15]">Salon der Gedanken: Philosophische Matinee</h1>
+</div>
+<div class="mt-8 px-4 space-y-2">
+<div class="flex items-center gap-4 bg-surface p-4 rounded-2xl border border-gray-50 transition-colors">
+<div class="text-primary flex items-center justify-center rounded-xl bg-white shrink-0 size-12 shadow-sm border border-gray-100">
+<span class="material-symbols-outlined text-[28px]">calendar_today</span>
+</div>
+<div class="flex-1">
+<p class="text-text-main text-base font-bold leading-tight">Thursday, Oct 24</p>
+<p class="text-text-muted text-sm font-medium">19:00 - 21:00</p>
+</div>
+<button class="shrink-0 flex items-center justify-center rounded-xl h-10 px-4 bg-white text-primary text-xs font-bold border border-gray-200 shadow-sm active:bg-gray-50">
+                Add
+            </button>
+</div>
+<div class="flex items-center gap-4 bg-surface p-4 rounded-2xl border border-gray-50">
+<div class="text-primary flex items-center justify-center rounded-xl bg-white shrink-0 size-12 shadow-sm border border-gray-100">
+<span class="material-symbols-outlined text-[28px]">location_on</span>
+</div>
+<div class="flex-1">
+<p class="text-text-main text-base font-bold leading-tight">Stadtbibliothek Forum</p>
+<p class="text-text-muted text-sm font-medium">Marktplatz 1, München</p>
+</div>
+<button class="shrink-0 flex size-10 items-center justify-center rounded-xl bg-white text-primary border border-gray-200 shadow-sm active:bg-gray-50">
+<span class="material-symbols-outlined text-[20px]">directions</span>
+</button>
+</div>
+</div>
+<div class="px-5 py-10">
+<h3 class="text-text-main text-xl font-bold mb-4">About this Salon</h3>
+<div class="space-y-4">
+<p class="text-text-muted text-base leading-relaxed">
+                Join us for an evening of deep intellectual exploration at the "Salon der Gedanken." This month, we delve into the intersection of modern ethics and artificial intelligence. How do our traditional philosophical frameworks adapt to a world governed by algorithms?
+            </p>
+<p class="text-text-muted text-base leading-relaxed">
+                Led by <span class="text-text-main font-semibold">Dr. Elena Fischer</span>, the matinee encourages open dialogue, critical thinking, and a communal search for meaning in the digital age. No prior philosophical training required—just an open mind and a passion for inquiry.
+            </p>
+</div>
+</div>
+<div class="px-4 pb-12">
+<div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+<div class="flex items-center gap-4 mb-5">
+<div class="size-12 rounded-full bg-white flex items-center justify-center border border-gray-200 shadow-sm">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<div>
+<p class="text-text-muted text-[10px] font-bold uppercase tracking-widest leading-none mb-1">Organized by</p>
+<p class="text-text-main font-bold text-lg">Kulturzentrum München</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-xl h-14 bg-white text-text-main text-sm font-bold border border-gray-200 shadow-sm active:bg-gray-50">
+<span>Visit original source</span>
+<span class="material-symbols-outlined text-lg">open_in_new</span>
+</button>
+</div>
+</div>
+<div class="px-4 pb-32">
+<div class="w-full h-44 rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden relative">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="flex flex-col items-center opacity-30">
+<span class="material-symbols-outlined text-4xl mb-2 text-text-main">map</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-text-main">Interactive Map</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 right-0 p-5 bg-white/90 ios-blur border-t border-gray-100">
+<div class="max-w-md mx-auto">
+<button class="w-full flex items-center justify-center bg-primary hover:bg-opacity-90 text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98]">
+            Register for Free
+        </button>
+<div class="h-4"></div> 
+</div>
+</footer>
+
+</body></html>

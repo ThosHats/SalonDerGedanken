@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Salon der Gedanken - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4F46E5",
+                        "accent": "#F59E0B",
+                        "background-light": "#FFFFFF",
+                        "surface-light": "#F8FAFC",
+                        "brand-beige": "#FAF9F6",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "3xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --primary-color: #4F46E5;
+            --soft-blue: #EFF6FF;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+        }
+        .map-overlay-light {
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(844px, 100dvh);
+            color: var(--text-dark);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-brand-beige">
+<div class="flex items-center bg-transparent p-4 pb-2 justify-between z-10">
+<div class="text-slate-800 flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-black/5 rounded-full transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</div>
+<h2 class="text-slate-900 text-lg font-bold leading-tight tracking-[-0.01em] flex-1 text-center">Setup</h2>
+<div class="size-12"></div>
+</div>
+<div class="flex w-full flex-row items-center justify-center gap-2 py-2 z-10">
+<div class="h-1.5 w-6 rounded-full bg-primary/10"></div>
+<div class="h-1.5 w-6 rounded-full bg-primary/10"></div>
+<div class="h-1.5 w-10 rounded-full bg-primary"></div>
+</div>
+<div class="flex flex-col flex-1 relative">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full opacity-60 grayscale-[0.5] sepia-[0.1]" data-alt="Light stylized city map" data-location="Berlin" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAHFC8m_fiD4VYvElLTn0gR3WSG6UzGcTY7YgarFeBGa56kz6HSU6gV5dRRaZNVjWYUr15lRsDXFUtOVxzuQpZ5ZYeH2yvs0q9B9KcEftIoqnNipDJSfcUFl2qhTZY7YJDLJMj7vB7hkMjpNtl4r4ppOI7ne4RAIbTOCHZsz0t7Jl1W5oBEbXtWHupSrj2wa8w5zOAkPKssFCyyWyMzeJLQAFTvY2IEw5WN3dejUWywNLnxe3wnFnrYnPED8xmi0omrQmPfk_t_BQ'); background-size: cover; background-position: center;">
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border-2 border-primary/20 bg-primary/5 map-overlay-light"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="bg-white p-2 rounded-full shadow-xl">
+<span class="material-symbols-outlined text-primary text-4xl block" style="font-variation-settings: 'FILL' 1">location_on</span>
+</div>
+</div>
+</div>
+<div class="relative z-10 flex flex-col flex-1 px-5 pt-6">
+<div class="text-center mb-8">
+<h2 class="text-slate-900 tracking-tight text-[32px] font-extrabold leading-tight pb-2">Your Neighborhood</h2>
+<p class="text-slate-500 text-base font-medium leading-relaxed max-w-[85%] mx-auto">Where should we look for inspiration and cultural gatherings?</p>
+</div>
+<div class="mb-auto">
+<div class="flex w-full h-14 items-stretch rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100">
+<div class="text-primary flex border-none items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-slate-900 placeholder:text-slate-400 px-4 pl-2 text-base font-semibold" placeholder="Search city or region" value="Berlin, Germany"/>
+</div>
+</div>
+<div class="bg-white/95 backdrop-blur-xl border border-white p-6 rounded-[2rem] mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-slate-400 text-xs font-bold uppercase tracking-widest block mb-1">Discovery Area</span>
+<span class="text-slate-900 font-extrabold text-xl">Radius Range</span>
+</div>
+<span class="text-primary font-bold bg-primary/10 px-4 py-1.5 rounded-full text-sm">25 km</span>
+</div>
+<div class="relative w-full h-12 flex items-center mb-8">
+<div class="absolute w-full h-1.5 bg-slate-100 rounded-full"></div>
+<div class="absolute w-[40%] h-1.5 bg-primary rounded-full"></div>
+<div class="absolute left-[40%] -translate-x-1/2 w-7 h-7 bg-white rounded-full shadow-md border-2 border-primary cursor-pointer flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+<div class="flex justify-between w-full mt-10 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+<span>0 km</span>
+<span>50 km</span>
+<span>100 km</span>
+</div>
+</div>
+<p class="text-slate-500 text-sm leading-relaxed text-center mb-6">
+                        We'll discover salons, gallery talks, and philosophical circles within this distance.
+                    </p>
+<button class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-4.5 h-14 rounded-2xl transition-all shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] flex items-center justify-center gap-2 group active:scale-[0.98]">
+<span class="text-base">Start Exploring</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="h-8 w-full bg-white/50 backdrop-blur-sm"></div>
+</div>
+
+</body></html>

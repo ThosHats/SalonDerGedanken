@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366f1",
+                        "primary-soft": "#818cf8",
+                        "surface-light": "#f8fafc",
+                        "ios-bg": "#f2f2f7",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ios-slider-thumb {
+            @apply absolute -top-2 size-5 rounded-full bg-white shadow-md border border-slate-200;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-ios-bg text-slate-900 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden pb-10">
+<header class="flex items-center bg-white/80 backdrop-blur-md px-4 py-3 sticky top-0 z-50 border-b border-slate-200">
+<div class="flex size-10 items-center text-primary cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+<span class="text-base font-normal -ml-1">Back</span>
+</div>
+<h2 class="flex-1 text-center text-[17px] font-semibold tracking-tight pr-12">Provider Management</h2>
+</header>
+<main class="flex flex-col gap-6 pt-4">
+<section class="px-4">
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Discovery Radius</h3>
+<span class="text-lg font-bold text-primary">25 km</span>
+</div>
+<div class="relative flex h-6 w-full items-center">
+<div class="h-1.5 flex-1 rounded-full bg-slate-100">
+<div class="relative h-full w-[35%] rounded-full bg-primary-soft">
+<div class="ios-slider-thumb -right-2.5"></div>
+</div>
+</div>
+</div>
+<p class="text-slate-400 text-xs mt-4 leading-relaxed italic">
+                        Adjust the distance to automatically filter cultural and philosophical sources near your location.
+                    </p>
+</div>
+</section>
+<section class="flex flex-col">
+<div class="flex items-center justify-between px-6 pb-2">
+<h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Nearby Providers</h3>
+<button class="text-primary text-sm font-medium active:opacity-60 transition-opacity">Select All</button>
+</div>
+<div class="bg-white border-y border-slate-200">
+<div class="flex items-center gap-4 pl-4 pr-4 min-h-[72px] py-2 justify-between active:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4 flex-1">
+<div class="text-primary-soft flex items-center justify-center rounded-2xl bg-indigo-50 shrink-0 size-12">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<div class="flex flex-col justify-center border-b border-slate-100 w-full py-4 min-h-[72px]">
+<p class="text-[16px] font-semibold text-slate-800 leading-tight">Philosophisches Café</p>
+<p class="text-slate-400 text-xs font-medium mt-0.5">0.5 km away</p>
+</div>
+</div>
+<div class="shrink-0 pl-2">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 p-0.5 has-[:checked]:bg-primary-soft transition-all duration-200">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm transform transition-transform duration-200 translate-x-0 parent-checked:translate-x-[20px]"></div>
+<input checked="" class="sr-only peer" type="checkbox"/>
+<style>
+                                    input:checked + div { transform: translateX(20px); }
+                                </style>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 pl-4 pr-4 min-h-[72px] py-2 justify-between active:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4 flex-1">
+<div class="text-primary-soft flex items-center justify-center rounded-2xl bg-indigo-50 shrink-0 size-12">
+<span class="material-symbols-outlined">museum</span>
+</div>
+<div class="flex flex-col justify-center border-b border-slate-100 w-full py-4 min-h-[72px]">
+<p class="text-[16px] font-semibold text-slate-800 leading-tight">Kulturforum Berlin</p>
+<p class="text-slate-400 text-xs font-medium mt-0.5">1.2 km away</p>
+</div>
+</div>
+<div class="shrink-0 pl-2">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 p-0.5 has-[:checked]:bg-primary-soft transition-all duration-200">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm transform transition-transform duration-200"></div>
+<input checked="" class="sr-only peer" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 pl-4 pr-4 min-h-[72px] py-2 justify-between active:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4 flex-1">
+<div class="text-primary-soft flex items-center justify-center rounded-2xl bg-indigo-50 shrink-0 size-12">
+<span class="material-symbols-outlined">theater_comedy</span>
+</div>
+<div class="flex flex-col justify-center border-b border-slate-100 w-full py-4 min-h-[72px]">
+<p class="text-[16px] font-semibold text-slate-800 leading-tight">Schaubühne am Lehniner Platz</p>
+<p class="text-slate-400 text-xs font-medium mt-0.5">3.8 km away</p>
+</div>
+</div>
+<div class="shrink-0 pl-2">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 p-0.5 has-[:checked]:bg-primary-soft transition-all duration-200">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm transform transition-transform duration-200"></div>
+<input checked="" class="sr-only peer" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 pl-4 pr-4 min-h-[72px] py-2 justify-between active:bg-slate-50 transition-colors bg-slate-50/50">
+<div class="flex items-center gap-4 flex-1 opacity-50">
+<div class="text-slate-400 flex items-center justify-center rounded-2xl bg-slate-200 shrink-0 size-12">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div class="flex flex-col justify-center border-b border-slate-100 w-full py-4 min-h-[72px]">
+<p class="text-[16px] font-semibold text-slate-800 leading-tight">Humboldt Universität</p>
+<p class="text-slate-400 text-xs font-medium mt-0.5">28.4 km away (Out of radius)</p>
+</div>
+</div>
+<div class="shrink-0 pl-2">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 p-0.5 has-[:checked]:bg-primary-soft transition-all duration-200">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm transform transition-transform duration-200"></div>
+<input class="sr-only peer" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 pl-4 pr-4 min-h-[72px] py-2 justify-between active:bg-slate-50 transition-colors">
+<div class="flex items-center gap-4 flex-1">
+<div class="text-primary-soft flex items-center justify-center rounded-2xl bg-indigo-50 shrink-0 size-12">
+<span class="material-symbols-outlined">coffee</span>
+</div>
+<div class="flex flex-col justify-center w-full py-4 min-h-[72px]">
+<p class="text-[16px] font-semibold text-slate-800 leading-tight">Salon der Gedanken Mitte</p>
+<p class="text-slate-400 text-xs font-medium mt-0.5">1.5 km away</p>
+</div>
+</div>
+<div class="shrink-0 pl-2">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 p-0.5 has-[:checked]:bg-primary-soft transition-all duration-200">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm transform transition-transform duration-200"></div>
+<input checked="" class="sr-only peer" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+</section>
+<div class="p-6 mt-2">
+<button class="w-full bg-primary text-white text-[17px] font-bold py-4 rounded-2xl shadow-lg shadow-indigo-200 active:scale-[0.98] active:bg-primary-soft transition-all">
+                    Apply Changes
+                </button>
+<div class="flex items-center justify-center gap-1 mt-6 text-slate-400">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<p class="text-xs">
+                        Current Location: <span class="font-bold text-slate-500">Berlin, DE</span>
+</p>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-200 h-20 flex justify-around items-center px-6 pb-4">
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-2xl">event</span>
+<span class="text-[10px] font-medium">Events</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1">settings</span>
+<span class="text-[10px] font-medium">Setup</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-2xl">favorite</span>
+<span class="text-[10px] font-medium">Saved</span>
+</div>
+</nav>
+</div>
+
+</body></html>
