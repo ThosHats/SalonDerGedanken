@@ -152,7 +152,7 @@ class EventDetailsScreen extends ConsumerWidget {
                     onPressed: () async {
                       final url = Uri.parse(e.url);
                       if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
                       } else {
                          debugPrint('Could not launch $url');
                       }
