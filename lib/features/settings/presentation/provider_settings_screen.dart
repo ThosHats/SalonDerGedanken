@@ -8,7 +8,7 @@ class ProviderSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allProviders = ref.watch(eventProvidersProvider);
+    final providersAsyncValue = ref.watch(eventProvidersProvider);
     final enabledProviders = ref.watch(enabledProvidersProvider);
 
     return Scaffold(
@@ -69,44 +69,61 @@ class ProviderSettingsScreen extends ConsumerWidget {
             ),
           ),
           
-          Container(
-            color: Colors.white,
-            child: Column(
-              children: allProviders.map((provider) {
-                final isEnabled = enabledProviders.contains(provider.id);
-                return Column(
-                  children: [
-                    SwitchListTile(
-                      value: isEnabled,
-                      activeColor: const Color(0xFF3211d4),
-                      onChanged: (val) {
-                        final current = ref.read(enabledProvidersProvider);
-                        if (val) {
-                          ref.read(enabledProvidersProvider.notifier).state = {...current, provider.id};
-                        } else {
-                          ref.read(enabledProvidersProvider.notifier).state = current.difference({provider.id});
-                        }
-                      },
-                      title: Text(
-                        provider.displayName,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(provider.description),
-                      secondary: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.indigo.shade50,
-                          borderRadius: BorderRadius.circular(8),
+          providersAsyncValue.when(
+            loading: () => const Center(child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(),
+            )),
+            error: (err, stack) => Center(child: Text('Error: $err')),
+            data: (allProviders) {
+               return Container(
+                color: Colors.white,
+                child: Column(
+                  children: allProviders.map((provider) {
+                    final isEnabled = enabledProviders == null 
+                        ? true 
+                        : enabledProviders.contains(provider.id);
+                        
+                    return Column(
+                      children: [
+                        SwitchListTile(
+                          value: isEnabled,
+                          activeColor: const Color(0xFF3211d4),
+                          onChanged: (val) {
+                            var current = ref.read(enabledProvidersProvider);
+                            // If null, first initialize it with all providers
+                            if (current == null) {
+                                current = allProviders.map((p) => p.id).toSet();
+                            }
+                            
+                            if (val) {
+                              ref.read(enabledProvidersProvider.notifier).state = {...current, provider.id};
+                            } else {
+                              ref.read(enabledProvidersProvider.notifier).state = current.difference({provider.id});
+                            }
+                          },
+                          title: Text(
+                            provider.name ?? provider.id,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(provider.region ?? provider.address ?? 'Cloud Provider'),
+                          secondary: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.indigo.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.menu_book, color: Color(0xFF3211d4)),
+                          ),
                         ),
-                        child: const Icon(Icons.menu_book, color: Color(0xFF3211d4)),
-                      ),
-                    ),
-                    if (provider != allProviders.last)
-                      const Divider(height: 1, indent: 60),
-                  ],
-                );
-              }).toList(),
-            ),
+                        if (provider != allProviders.last)
+                          const Divider(height: 1, indent: 60),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              );
+            },
           ),
         ],
       ),

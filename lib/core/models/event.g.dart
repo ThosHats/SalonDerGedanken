@@ -19,7 +19,7 @@ class EventAdapter extends TypeAdapter<Event> {
     return Event(
       id: fields[0] as String,
       title: fields[1] as String,
-      description: fields[2] as String,
+      description: fields[2] as String?,
       longDescription: fields[3] as String?,
       startDateTime: fields[4] as DateTime,
       endDateTime: fields[5] as DateTime?,
@@ -32,13 +32,16 @@ class EventAdapter extends TypeAdapter<Event> {
       address: fields[12] as String?,
       url: fields[13] as String,
       imageUrl: fields[14] as String?,
+      region: fields[15] as String?,
+      latitude: fields[16] as double?,
+      longitude: fields[17] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Event obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +71,13 @@ class EventAdapter extends TypeAdapter<Event> {
       ..writeByte(13)
       ..write(obj.url)
       ..writeByte(14)
-      ..write(obj.imageUrl);
+      ..write(obj.imageUrl)
+      ..writeByte(15)
+      ..write(obj.region)
+      ..writeByte(16)
+      ..write(obj.latitude)
+      ..writeByte(17)
+      ..write(obj.longitude);
   }
 
   @override
@@ -89,21 +98,24 @@ class EventAdapter extends TypeAdapter<Event> {
 Event _$EventFromJson(Map<String, dynamic> json) => Event(
       id: json['id'] as String,
       title: json['title'] as String,
-      description: json['description'] as String,
+      description: json['description'] as String?,
       longDescription: json['longDescription'] as String?,
-      startDateTime: DateTime.parse(json['startDateTime'] as String),
-      endDateTime: json['endDateTime'] == null
+      startDateTime: DateTime.parse(json['start_date'] as String),
+      endDateTime: json['end_date'] == null
           ? null
-          : DateTime.parse(json['endDateTime'] as String),
+          : DateTime.parse(json['end_date'] as String),
       isMultiDay: json['isMultiDay'] as bool? ?? false,
       openingHours: json['openingHours'] as String?,
       isFree: json['isFree'] as bool? ?? false,
-      priceText: json['priceText'] as String?,
-      providerId: json['providerId'] as String,
+      priceText: json['cost'] as String?,
+      providerId: json['provider_id'] as String,
       locationName: json['locationName'] as String?,
-      address: json['address'] as String?,
-      url: json['url'] as String,
+      address: json['location'] as String?,
+      url: json['source_url'] as String,
       imageUrl: json['imageUrl'] as String?,
+      region: json['region'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
@@ -111,15 +123,18 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'title': instance.title,
       'description': instance.description,
       'longDescription': instance.longDescription,
-      'startDateTime': instance.startDateTime.toIso8601String(),
-      'endDateTime': instance.endDateTime?.toIso8601String(),
+      'start_date': instance.startDateTime.toIso8601String(),
+      'end_date': instance.endDateTime?.toIso8601String(),
       'isMultiDay': instance.isMultiDay,
       'openingHours': instance.openingHours,
       'isFree': instance.isFree,
-      'priceText': instance.priceText,
-      'providerId': instance.providerId,
+      'cost': instance.priceText,
+      'provider_id': instance.providerId,
       'locationName': instance.locationName,
-      'address': instance.address,
-      'url': instance.url,
+      'location': instance.address,
+      'source_url': instance.url,
       'imageUrl': instance.imageUrl,
+      'region': instance.region,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
     };

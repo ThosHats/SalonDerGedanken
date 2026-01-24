@@ -104,14 +104,15 @@ class EventDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              e.description,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color(0xFF475569),
-                height: 1.6,
+            if (e.description != null)
+              Text(
+                e.description!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF475569),
+                  height: 1.6,
+                ),
               ),
-            ),
              if (e.longDescription != null) ...[
               const SizedBox(height: 12),
                Text(
@@ -124,28 +125,32 @@ class EventDetailsScreen extends StatelessWidget {
             ),
              ],
 
-             const SizedBox(height: 40),
 
-             // Actions
-             SizedBox(
-               width: double.infinity,
-               child: ElevatedButton(
-                 onPressed: () {}, 
-                 style: ElevatedButton.styleFrom(
-                   backgroundColor: const Color(0xFF3211d4),
-                   foregroundColor: Colors.white,
-                   padding: const EdgeInsets.symmetric(vertical: 16),
-                   shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(16),
-                   ),
-                   elevation: 2,
-                 ),
-                 child: const Text(
-                   'Visit Website',
-                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                 ),
-               ),
-             ),
+              if (e.url.isNotEmpty) ...[
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Import 'url_launcher' at top if needed, but for now just print or no-op
+                      // In real app: launchUrl(Uri.parse(e.url));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3211d4),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: const Text(
+                      'Visit Website',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ]
           ],
         ),
       ),

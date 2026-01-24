@@ -44,6 +44,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.grey),
+            onPressed: () {
+              ref.refresh(refreshEventsProvider);
+            },
+          ),
           Container(
             margin: const EdgeInsets.only(right: 16),
             width: 32,
@@ -427,14 +433,18 @@ class _EventListItem extends StatelessWidget {
                     children: [
                       Icon(Icons.location_on, size: 14, color: Colors.grey[400]),
                       const SizedBox(width: 4),
-                      Text(
-                        event.locationName ?? event.address ?? 'Unknown Location',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[500],
-                        ),
+                  Expanded(
+                    child: Text(
+                      event.locationName ?? event.address ?? 'Unknown Location',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[500],
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                     ],
                   ),
                 ],
