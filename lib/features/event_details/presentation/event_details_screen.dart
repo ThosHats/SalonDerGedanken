@@ -4,6 +4,7 @@ import 'package:salon_der_gedanken/core/models/event.dart';
 import 'package:salon_der_gedanken/core/providers/favorites_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EventDetailsScreen extends ConsumerWidget {
   final Event? event;
@@ -148,9 +149,13 @@ class EventDetailsScreen extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Import 'url_launcher' at top if needed, but for now just print or no-op
-                      // In real app: launchUrl(Uri.parse(e.url));
+                    onPressed: () async {
+                      final url = Uri.parse(e.url);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url);
+                      } else {
+                         debugPrint('Could not launch $url');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3211d4),
