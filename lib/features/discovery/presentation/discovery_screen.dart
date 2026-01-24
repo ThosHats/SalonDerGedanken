@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:salon_der_gedanken/core/models/event.dart';
 import 'package:salon_der_gedanken/core/services/event_service.dart';
+import 'package:salon_der_gedanken/core/services/location_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
 class DiscoveryScreen extends ConsumerStatefulWidget {
@@ -13,6 +15,29 @@ class DiscoveryScreen extends ConsumerStatefulWidget {
 }
 
 class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
+  DateTime _selectedDate = DateTime.now();
+  bool _sortByProximity = false;
+  Position? _currentPosition;
+
+  Future<void> _toggleProximitySort() async {
+    if (_sortByProximity) {
+      setState(() => _sortByProximity = false);
+      return;
+    }
+
+    final position = await LocationService().getCurrentLocation();
+    if (position != null) {
+      setState(() {
+        _currentPosition = position;
+        _sortByProximity = true;
+      });
+    } else {
+       if(mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location permission required for nearby sort')));
+       }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final eventsAsync = ref.watch(eventsProvider);
@@ -82,8 +107,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     separatorBuilder: (context, index) => const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       final date = DateTime.now().add(Duration(days: index));
-                      final isSelected = index == 0; // Temp logic
-                      return _DateChip(date: date, isSelected: isSelected);
+                      final isSelected = DateUtils.isSameDay(date, _selectedDate);
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedDate = date;
+                          });
+                        },
+                        child: _DateChip(date: date, isSelected: isSelected),
+                      );
                     },
                   ),
                 ),
@@ -120,7 +152,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                           children: [
                             _FilterChip(icon: Icons.check_circle, label: 'Free only', isActive: true),
                             const SizedBox(width: 8),
-                            _FilterChip(icon: Icons.calendar_month, label: 'Next 7 Days'),
+                            GestureDetector(
+                              onTap: _toggleProximitySort,
+                              child: _FilterChip(
+                                icon: Icons.near_me, 
+                                label: 'Nearby', 
+                                isActive: _sortByProximity
+                              ),
+                            ),
                             const SizedBox(width: 8),
                             _FilterChip(icon: Icons.tune, label: 'Topics'),
                           ],
@@ -148,7 +187,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                         ),
                       ),
                       Text(
-                        '${eventsAsync.value?.length ?? 0} events',
+                        '${eventsAsync.value?.where((e) => DateUtils.isSameDay(e.startDateTime, _selectedDate)).length ?? 0} events',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -163,20 +202,40 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
               // Event Items
               eventsAsync.when(
                 data: (events) {
-                  if (events.isEmpty) {
+                  final filteredEvents = events.where((e) => DateUtils.isSameDay(e.startDateTime, _selectedDate)).toList();
+                  
+                  // Sort by proximity if enabled
+                  if (_sortByProximity && _currentPosition != null) {
+                    filteredEvents.sort((a, b) {
+                      if (a.latitude == null || a.longitude == null) return 1;
+                      if (b.latitude == null || b.longitude == null) return -1;
+                      
+                      final distA = Geolocator.distanceBetween(
+                        _currentPosition!.latitude, _currentPosition!.longitude, 
+                        a.latitude!, a.longitude!
+                      );
+                      final distB = Geolocator.distanceBetween(
+                        _currentPosition!.latitude, _currentPosition!.longitude, 
+                        b.latitude!, b.longitude!
+                      );
+                      return distA.compareTo(distB);
+                    });
+                  }
+
+                  if (filteredEvents.isEmpty) {
                      return const SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.all(32.0),
-                        child: Center(child: Text('No events found')),
+                        child: Center(child: Text('No events found for this date')),
                       ),
                     );
                   }
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        return _EventListItem(event: events[index]);
+                        return _EventListItem(event: filteredEvents[index]);
                       },
-                      childCount: events.length,
+                      childCount: filteredEvents.length,
                     ),
                   );
                 },
