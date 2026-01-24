@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:salon_der_gedanken/core/models/event.dart';
 import 'package:salon_der_gedanken/core/services/event_service.dart';
 import 'package:salon_der_gedanken/core/services/location_service.dart';
+import 'package:salon_der_gedanken/core/providers/favorites_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
@@ -272,7 +273,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _NavBarItem(icon: Icons.explore, label: 'Explore', isActive: true),
-                  _NavBarItem(icon: Icons.favorite_border, label: 'Saved'),
+                  _NavBarItem(
+                    icon: Icons.favorite_border, 
+                    label: 'Liked',
+                    onTap: () => context.push('/liked'),
+                  ),
                   _NavBarItem(icon: Icons.calendar_today, label: 'Events'),
                   _NavBarItem(
                     icon: Icons.settings, 
@@ -410,12 +415,15 @@ class _NavBarItem extends StatelessWidget {
   }
 }
 
-class _EventListItem extends StatelessWidget {
+class _EventListItem extends ConsumerWidget {
   final Event event;
   const _EventListItem({required this.event});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favorites = ref.watch(favoritesProvider);
+    final isFavorite = favorites.contains(event.id);
+
     final timeFormat = DateFormat('HH:mm');
     final startTime = timeFormat.format(event.startDateTime);
     final endTime = event.endDateTime != null ? ' - ${timeFormat.format(event.endDateTime!)}' : '';
@@ -509,7 +517,19 @@ class _EventListItem extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: Colors.grey[300]),
+            GestureDetector(
+                onTap: () {
+                  ref.read(favoritesProvider.notifier).toggleFavorite(event.id);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  color: Colors.transparent, // increase touch area
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border, 
+                    color: isFavorite ? Colors.red : Colors.grey[300],
+                  ),
+                ),
+              ),
           ],
         ),
       ),

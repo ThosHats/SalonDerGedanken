@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salon_der_gedanken/core/models/event.dart';
+import 'package:salon_der_gedanken/core/providers/favorites_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class EventDetailsScreen extends StatelessWidget {
+class EventDetailsScreen extends ConsumerWidget {
   final Event? event;
   final String? eventId;
 
   const EventDetailsScreen({super.key, this.event, this.eventId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // In a real app, if event is null, fetch it by ID using a provider
     if (event == null) {
       return const Scaffold(
@@ -19,6 +21,9 @@ class EventDetailsScreen extends StatelessWidget {
     }
 
     final e = event!;
+    final favorites = ref.watch(favoritesProvider);
+    final isFavorite = favorites.contains(e.id);
+    
     final dateFormat = DateFormat('EEEE, d MMMM yyyy');
     final timeFormat = DateFormat('HH:mm');
 
@@ -29,6 +34,18 @@ class EventDetailsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF3211d4), size: 20),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.red : const Color(0xFF3211d4),
+            ),
+            onPressed: () {
+              ref.read(favoritesProvider.notifier).toggleFavorite(e.id);
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
         title: const Text(
           'Event Details',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

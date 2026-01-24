@@ -4,6 +4,7 @@ import 'package:salon_der_gedanken/core/models/event.dart';
 import 'package:salon_der_gedanken/features/discovery/presentation/discovery_screen.dart';
 import 'package:salon_der_gedanken/features/event_details/presentation/event_details_screen.dart';
 import 'package:salon_der_gedanken/features/settings/presentation/provider_settings_screen.dart';
+import 'package:salon_der_gedanken/features/favorites/presentation/liked_events_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -23,6 +24,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const ProviderSettingsScreen(),
+    ),
+    GoRoute(
+      path: '/liked',
+      builder: (context, state) => const LikedEventsScreen(),
     ),
   ],
 );
