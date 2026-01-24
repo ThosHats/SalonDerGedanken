@@ -5,7 +5,8 @@ import 'package:salon_der_gedanken/core/providers/favorites_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:salon_der_gedanken/core/services/event_service.dart';
+import 'package:salon_der_gedanken/core/models/provider_config.dart';
 class EventDetailsScreen extends ConsumerWidget {
   final Event? event;
   final String? eventId;
@@ -103,10 +104,41 @@ class EventDetailsScreen extends ConsumerWidget {
               subtext: e.address,
             ),
              const SizedBox(height: 16),
-            _InfoRow(
-              icon: Icons.store,
-              text: 'Host: ${e.providerId}', // Map ID to name in real app
-              subtext: 'Weekly series',
+            Consumer(
+              builder: (context, ref, child) {
+                  final providersAsync = ref.watch(eventProvidersProvider);
+                  return providersAsync.when(
+                    data: (providers) {
+                      final provider = providers.firstWhere(
+                        (p) => p.id == e.providerId,
+                         orElse: () => ProviderConfig(
+                             id: e.providerId, 
+                             name: e.providerId, 
+                             enabled: true, 
+                             module: '', 
+                             updateInterval: ''
+                         ),
+                      );
+                      final displayName = provider.name ?? e.providerId;
+                      
+                      return _InfoRow(
+                        icon: Icons.store,
+                        text: 'Host: $displayName',
+                        subtext: 'Weekly series',
+                      );
+                    },
+                     loading: () => _InfoRow(
+                        icon: Icons.store,
+                        text: 'Host: ${e.providerId}',
+                        subtext: 'Weekly series',
+                      ),
+                     error: (_, __) => _InfoRow(
+                        icon: Icons.store,
+                        text: 'Host: ${e.providerId}',
+                        subtext: 'Weekly series',
+                      ),
+                  );
+              }
             ),
 
             const SizedBox(height: 32),

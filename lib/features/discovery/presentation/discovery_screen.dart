@@ -5,6 +5,7 @@ import 'package:salon_der_gedanken/core/models/event.dart';
 import 'package:salon_der_gedanken/core/services/event_service.dart';
 import 'package:salon_der_gedanken/core/services/location_service.dart';
 import 'package:salon_der_gedanken/core/providers/favorites_provider.dart';
+import 'package:salon_der_gedanken/core/models/provider_config.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
@@ -19,6 +20,25 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   DateTime _selectedDate = DateTime.now();
   bool _sortByProximity = false;
   Position? _currentPosition;
+  double _searchRadius = 20.0; // Default max distance
+
+  @override
+  void initState() {
+    super.initState();
+    _initLocation();
+  }
+
+  Future<void> _initLocation() async {
+    final position = await LocationService().getCurrentLocation();
+    if(mounted && position != null) {
+      setState(() {
+        _currentPosition = position;
+        // Automatically enable proximity sort if location is found? 
+        // User asked for slider to determine distance, implying filtering.
+        // We will keep _sortByProximity toggle separate for now or maybe just use distance for filtering.
+      });
+    }
+  }
 
   Future<void> _toggleProximitySort() async {
     if (_sortByProximity) {
@@ -26,10 +46,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       return;
     }
 
-    final position = await LocationService().getCurrentLocation();
-    if (position != null) {
+    if (_currentPosition == null) {
+         await _initLocation();
+    }
+
+    if (_currentPosition != null) {
       setState(() {
-        _currentPosition = position;
         _sortByProximity = true;
       });
     } else {
@@ -128,21 +150,61 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                   child: Column(
                     children: [
-                      // Search
+                      // Distance Slider replaces Search
                       Container(
-                        height: 40,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: Colors.grey[50],
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[200]!),
                         ),
-                        child: const TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            hintText: 'Search events',
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 8),
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Distance',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                Text(
+                                  '${_searchRadius.round()} km',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF3211d4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                activeTrackColor: const Color(0xFF3211d4),
+                                inactiveTrackColor: Colors.grey[300],
+                                thumbColor: const Color(0xFF3211d4),
+                                overlayColor: const Color(0xFF3211d4).withValues(alpha: 0.1),
+                                trackHeight: 4.0,
+                                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                              ),
+                              child: Slider(
+                                value: _searchRadius,
+                                min: 1,
+                                max: 20,
+                                divisions: 19,
+                                label: '${_searchRadius.round()} km',
+                                onChanged: (value) {
+                                  setState(() {
+                                    _searchRadius = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -187,14 +249,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                           letterSpacing: 1.2,
                         ),
                       ),
-                      Text(
-                        '${eventsAsync.value?.where((e) => DateUtils.isSameDay(e.startDateTime, _selectedDate)).length ?? 0} events',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[400],
-                        ),
-                      ),
+                      // Count moved inside builder to reflect filtered count
                     ],
                   ),
                 ),
@@ -203,8 +258,20 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
               // Event Items
               eventsAsync.when(
                 data: (events) {
-                  final filteredEvents = events.where((e) => DateUtils.isSameDay(e.startDateTime, _selectedDate)).toList();
+                  var filteredEvents = events.where((e) => DateUtils.isSameDay(e.startDateTime, _selectedDate)).toList();
                   
+                  // Filter by Distance
+                  if (_currentPosition != null) {
+                    filteredEvents = filteredEvents.where((e) {
+                      if (e.latitude == null || e.longitude == null) return false;
+                      final distanceInMeters = Geolocator.distanceBetween(
+                        _currentPosition!.latitude, _currentPosition!.longitude, 
+                        e.latitude!, e.longitude!
+                      );
+                      return (distanceInMeters / 1000) <= _searchRadius;
+                    }).toList();
+                  }
+
                   // Sort by proximity if enabled
                   if (_sortByProximity && _currentPosition != null) {
                     filteredEvents.sort((a, b) {
@@ -223,11 +290,28 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     });
                   }
 
+                  // Show count
+                  // (Ideally we'd update the header count but slivers make it tricky to pass data up easily without Riverpod state)
+                  
                   if (filteredEvents.isEmpty) {
-                     return const SliverToBoxAdapter(
+                     return SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: Center(child: Text('No events found for this date')),
+                        padding: const EdgeInsets.all(32.0),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              const Text('No events found'),
+                              if (_currentPosition == null)
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    'Waiting for location...', 
+                                    style: TextStyle(fontSize: 12, color: Colors.grey)
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   }
@@ -462,6 +546,43 @@ class _EventListItem extends ConsumerWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
+                      const SizedBox(width: 8),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final providersAsync = ref.watch(eventProvidersProvider);
+                          return providersAsync.when(
+                            data: (providers) {
+                              final provider = providers.firstWhere(
+                                (p) => p.id == event.providerId, 
+                                // Create a dummy provider or handle null if preferable, 
+                                // but firstWhere with orElse is safer.
+                                orElse: () => ProviderConfig(
+                                  id: event.providerId, 
+                                  name: event.providerId, // Fallback to ID
+                                  enabled: true, 
+                                  module: '', 
+                                  updateInterval: ''
+                                ),
+                              );
+                              final displayName = provider.name ?? event.providerId;
+                              
+                              return Flexible(
+                                child: Text(
+                                  displayName,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[600],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                          );
+                        }
                       ),
                       const SizedBox(width: 8),
                       if (event.isFree)

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salon_der_gedanken/core/models/event.dart';
 import 'package:salon_der_gedanken/core/services/event_service.dart';
 import 'package:salon_der_gedanken/core/providers/favorites_provider.dart';
+import 'package:salon_der_gedanken/core/models/provider_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -97,13 +98,53 @@ class _LikedEventItem extends ConsumerWidget {
                  child: Column(
                    crossAxisAlignment: CrossAxisAlignment.start,
                    children: [
-                     Text(
-                       dateFormat.format(event.startDateTime),
-                       style: const TextStyle(
-                         color: Color(0xFF3211d4),
-                         fontSize: 11,
-                         fontWeight: FontWeight.bold,
-                       ),
+                     Row(
+                       children: [
+                         Text(
+                           dateFormat.format(event.startDateTime),
+                           style: const TextStyle(
+                             color: Color(0xFF3211d4),
+                             fontSize: 11,
+                             fontWeight: FontWeight.bold,
+                           ),
+                         ),
+                         const SizedBox(width: 8),
+                         Expanded(
+                           child: Consumer(
+                              builder: (context, ref, child) {
+                                final providersAsync = ref.watch(eventProvidersProvider);
+                                return providersAsync.when(
+                                  data: (providers) {
+                                    final provider = providers.firstWhere(
+                                      (p) => p.id == event.providerId,
+                                      orElse: () => ProviderConfig(
+                                        id: event.providerId, 
+                                        name: event.providerId, 
+                                        enabled: true, 
+                                        module: '', 
+                                        updateInterval: ''
+                                      ),
+                                    );
+                                    final displayName = provider.name ?? event.providerId;
+                                    
+                                    return Text(
+                                      displayName,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey[600],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    );
+                                  },
+                                   loading: () => const SizedBox.shrink(),
+                                   error: (_, __) => const SizedBox.shrink(),
+                                );
+                              }
+                           ),
+                         ),
+                       ],
                      ),
                      const SizedBox(height: 4),
                      Text(
