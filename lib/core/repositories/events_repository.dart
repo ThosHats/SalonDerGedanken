@@ -39,7 +39,15 @@ class EventsRepository {
 
     if (forceRefresh || isCacheStale) {
       try {
-        final events = await _apiService.getEvents();
+        final now = DateTime.now();
+        final startDate = now.toIso8601String().substring(0, 10);
+        // Fetch specific range (14 days as shown in UI)
+        final endDate = now.add(const Duration(days: 14)).toIso8601String().substring(0, 10);
+
+        final events = await _apiService.getEvents(
+          from: startDate,
+          to: endDate,
+        );
         
         // Clear old cache and save new events
         await eventsBox.clear();

@@ -68,9 +68,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.auto_awesome, color: Color(0xFF3211d4)),
+            Image.asset(
+              'assets/icon/Icon_SalonDerGedanken.png',
+              height: 24,
+            ),
             SizedBox(width: 8),
             Text(
               'Salon der Gedanken',
