@@ -7,11 +7,25 @@ import 'package:salon_der_gedanken/core/models/provider_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class LikedEventsScreen extends ConsumerWidget {
+class LikedEventsScreen extends ConsumerStatefulWidget {
   const LikedEventsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LikedEventsScreen> createState() => _LikedEventsScreenState();
+}
+
+class _LikedEventsScreenState extends ConsumerState<LikedEventsScreen> {
+  final ScrollController _scrollController = ScrollController();
+  bool _shouldScrollToNow = true;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final eventsAsync = ref.watch(eventsProvider);
     final favorites = ref.watch(favoritesProvider);
 
@@ -57,11 +71,47 @@ class LikedEventsScreen extends ConsumerWidget {
             );
           }
 
+          // Sort chronological
+          likedEvents.sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
+
+          // Auto-scroll logic to current time
+          if (_shouldScrollToNow) {
+            final now = DateTime.now();
+            final firstFutureIndex = likedEvents.indexWhere((e) {
+              final end = e.endDateTime ?? e.startDateTime.add(const Duration(hours: 1)); 
+              return end.isAfter(now);
+            });
+
+            if (firstFutureIndex > 0) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (_scrollController.hasClients) {
+                    // Approx item height + margin + padding
+                    double offset = (firstFutureIndex * 105.0); // Estimate
+                    
+                    _scrollController.animateTo(
+                      offset, 
+                      duration: const Duration(milliseconds: 500), 
+                      curve: Curves.easeOut,
+                    );
+                }
+              });
+            }
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+               if(mounted) setState(() => _shouldScrollToNow = false);
+            });
+          }
+
           return ListView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemCount: likedEvents.length,
             itemBuilder: (context, index) {
-              return _LikedEventItem(event: likedEvents[index]);
+              final event = likedEvents[index];
+              final isPast = event.endDateTime != null 
+                  ? event.endDateTime!.isBefore(DateTime.now())
+                  : event.startDateTime.add(const Duration(hours: 2)).isBefore(DateTime.now());
+
+              return _LikedEventItem(event: event, isPast: isPast);
             },
           );
         },
@@ -74,7 +124,8 @@ class LikedEventsScreen extends ConsumerWidget {
 
 class _LikedEventItem extends ConsumerWidget {
   final Event event;
-  const _LikedEventItem({required this.event});
+  final bool isPast;
+  const _LikedEventItem({required this.event, this.isPast = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,8 +134,9 @@ class _LikedEventItem extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-         color: Colors.white,
-         border: Border(bottom: BorderSide(color: Colors.grey[50]!)),
+         color: isPast ? Colors.grey[200] : Colors.white,
+         borderRadius: BorderRadius.circular(12),
+         border: Border.all(color: Colors.grey[100]!),
       ),
       child: InkWell(
         onTap: () {
@@ -102,8 +154,8 @@ class _LikedEventItem extends ConsumerWidget {
                        children: [
                          Text(
                            dateFormat.format(event.startDateTime),
-                           style: const TextStyle(
-                             color: Color(0xFF3211d4),
+                           style: TextStyle(
+                             color: isPast ? Colors.grey[500] : const Color(0xFF3211d4),
                              fontSize: 11,
                              fontWeight: FontWeight.bold,
                            ),
@@ -149,10 +201,10 @@ class _LikedEventItem extends ConsumerWidget {
                      const SizedBox(height: 4),
                      Text(
                        event.title,
-                       style: const TextStyle(
+                       style: TextStyle(
                          fontSize: 16,
                          fontWeight: FontWeight.bold,
-                         color: Color(0xFF0f172a),
+                         color: isPast ? Colors.grey[500] : const Color(0xFF0f172a),
                        ),
                        maxLines: 1,
                        overflow: TextOverflow.ellipsis,

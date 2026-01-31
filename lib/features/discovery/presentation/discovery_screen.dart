@@ -21,6 +21,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   bool _sortByProximity = false;
   Position? _currentPosition;
   double _searchRadius = 20.0; // Default max distance
+  final ScrollController _scrollController = ScrollController();
+  bool _shouldScrollToNow = true;
 
   @override
   void initState() {
@@ -59,6 +61,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location permission required for nearby sort')));
        }
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -117,6 +125,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       body: Stack(
         children: [
           CustomScrollView(
+            controller: _scrollController,
             slivers: [
               // Date Selector
               SliverToBoxAdapter(
@@ -138,6 +147,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                         onTap: () {
                           setState(() {
                             _selectedDate = date;
+                            _shouldScrollToNow = true; // Reset scroll flag when date changes
                           });
                         },
                         child: _DateChip(date: date, isSelected: isSelected),
@@ -275,7 +285,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     }).toList();
                   }
 
-                  // Sort by proximity if enabled
+                  // Ensure chronological sort (primary sort)
+                  filteredEvents.sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
+
+                  // Sort by proximity if enabled (secondary sort or override?)
+                  // User request implies chronological is strict.
+                  // If proximity is enabled, maybe we should sort by proximity primarily?
+                  // The user request "Die liste der Events soll chonologisch geordnet sein" is quite specific.
+                  // But "Nearby" toggle implies sorting by distance.
+                  // Let's keep proximity sort if enabled, otherwise chronological.
                   if (_sortByProximity && _currentPosition != null) {
                     filteredEvents.sort((a, b) {
                       if (a.latitude == null || a.longitude == null) return 1;
@@ -291,6 +309,50 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                       );
                       return distA.compareTo(distB);
                     });
+                  }
+
+                  // Auto-scroll logic to current time
+                  if (_shouldScrollToNow && !_sortByProximity && DateUtils.isSameDay(_selectedDate, DateTime.now())) {
+                    final now = DateTime.now();
+                    final firstFutureIndex = filteredEvents.indexWhere((e) {
+                      final end = e.endDateTime ?? e.startDateTime.add(const Duration(hours: 1)); // assume 1h if null
+                      return end.isAfter(now);
+                    });
+
+                    if (firstFutureIndex > 0) {
+                      // Schedule scroll after build
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (_scrollController.hasClients) {
+                           // Approx item height + margin = ~110
+                           // List header height = ~250 (DateSelector 90 + Filter 100ish + Header 40)
+                           // We need to account for the Sliver headers above the list.
+                           // Actually, simplest is to scroll relative to list start?
+                           // CustomScrollView with offsets is tricky.
+                           // Let's try a safe estimate.
+                           // Header height is roughly 90 + 130 + 40 = ~260.
+                           double offset = 260.0 + (firstFutureIndex * 116.0); // 116 approx height
+                           
+                           _scrollController.animateTo(
+                             offset, 
+                             duration: const Duration(milliseconds: 500), 
+                             curve: Curves.easeOut,
+                           );
+                        }
+                      });
+                    }
+                    // Disable flag to prevent repeated scrolling
+                    // We need to do this carefully inside the build cycle or callback.
+                    // Doing it in callback is safer.
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                         if(mounted) setState(() => _shouldScrollToNow = false);
+                    });
+                  } else {
+                     // If not today or sorting by proximity, simplify disable flag
+                     if (_shouldScrollToNow) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                             if(mounted) setState(() => _shouldScrollToNow = false);
+                        });
+                     }
                   }
 
                   // Show count
@@ -321,7 +383,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        return _EventListItem(event: filteredEvents[index]);
+                        return _EventListItem(
+                          event: filteredEvents[index],
+                          isPast: filteredEvents[index].endDateTime != null 
+                              ? filteredEvents[index].endDateTime!.isBefore(DateTime.now())
+                              : filteredEvents[index].startDateTime.add(const Duration(hours: 2)).isBefore(DateTime.now()), // fallback assumption
+                        );
                       },
                       childCount: filteredEvents.length,
                     ),
@@ -504,7 +571,9 @@ class _NavBarItem extends StatelessWidget {
 
 class _EventListItem extends ConsumerWidget {
   final Event event;
-  const _EventListItem({required this.event});
+  final bool isPast;
+
+  const _EventListItem({required this.event, this.isPast = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -518,8 +587,10 @@ class _EventListItem extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6), // Added vertical margin slightly
       decoration: BoxDecoration(
-         color: Colors.white, // In the design the list itself might be white but items are separated
-         border: Border(bottom: BorderSide(color: Colors.grey[50]!)),
+         color: isPast ? Colors.grey[200] : Colors.white, // In the design the list itself might be white but items are separated
+         borderRadius: BorderRadius.circular(12), // Added radius for better look with background color
+         border: Border.all(color: Colors.grey[100]!), // changed bottom border to full border
+         // box-shadow? maybe
       ),
       child: InkWell(
         onTap: () {
@@ -543,8 +614,8 @@ class _EventListItem extends ConsumerWidget {
                         ),
                         child: Text(
                           '$startTime$endTime',
-                          style: const TextStyle(
-                            color: Color(0xFF3211d4),
+                          style: TextStyle(
+                            color: isPast ? Colors.grey[500] : const Color(0xFF3211d4),
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                           ),
@@ -611,10 +682,10 @@ class _EventListItem extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     event.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0f172a), // slate-900
+                      color: isPast ? Colors.grey[500] : const Color(0xFF0f172a), // slate-900
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
