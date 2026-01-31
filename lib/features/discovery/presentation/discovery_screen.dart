@@ -435,7 +435,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                   _NavBarItem(icon: Icons.calendar_today, label: 'Events'),
                   _NavBarItem(
                     icon: Icons.settings, 
-                    label: 'Settings',
+                    label: 'Providers',
                     onTap: () => context.push('/settings'),
                   ),
                 ],
