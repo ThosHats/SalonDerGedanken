@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,10 +34,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
 
   Future<void> _initLocation() async {
     final position = await LocationService().getCurrentLocation();
-    if(mounted && position != null) {
+    if (mounted && position != null) {
       setState(() {
         _currentPosition = position;
-        // Automatically enable proximity sort if location is found? 
+        // Automatically enable proximity sort if location is found?
         // User asked for slider to determine distance, implying filtering.
         // We will keep _sortByProximity toggle separate for now or maybe just use distance for filtering.
       });
@@ -49,7 +51,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
     }
 
     if (_currentPosition == null) {
-         await _initLocation();
+      await _initLocation();
     }
 
     if (_currentPosition != null) {
@@ -57,9 +59,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         _sortByProximity = true;
       });
     } else {
-       if(mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location permission required for nearby sort')));
-       }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Location permission required for nearby sort'),
+          ),
+        );
+      }
     }
   }
 
@@ -78,10 +84,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'assets/icon/Icon_SalonDerGedanken.png',
-              height: 24,
-            ),
+            Image.asset('assets/icon/Icon_SalonDerGedanken.png', height: 24),
             SizedBox(width: 8),
             Text(
               'Salon der Gedanken',
@@ -97,16 +100,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.grey[100],
-            height: 1.0,
-          ),
+          child: Container(color: Colors.grey[100], height: 1.0),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.grey),
             onPressed: () {
-              ref.refresh(refreshEventsProvider);
+              ref.invalidate(refreshEventsProvider);
+              unawaited(ref.read(refreshEventsProvider.future));
             },
           ),
           Container(
@@ -136,18 +137,26 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     border: Border(bottom: BorderSide(color: Colors.grey[50]!)),
                   ),
                   child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     scrollDirection: Axis.horizontal,
                     itemCount: 14,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       final date = DateTime.now().add(Duration(days: index));
-                      final isSelected = DateUtils.isSameDay(date, _selectedDate);
+                      final isSelected = DateUtils.isSameDay(
+                        date,
+                        _selectedDate,
+                      );
                       return GestureDetector(
                         onTap: () {
                           setState(() {
                             _selectedDate = date;
-                            _shouldScrollToNow = true; // Reset scroll flag when date changes
+                            _shouldScrollToNow =
+                                true; // Reset scroll flag when date changes
                           });
                         },
                         child: _DateChip(date: date, isSelected: isSelected),
@@ -156,7 +165,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                   ),
                 ),
               ),
-              
+
               // Filter Bar
               SliverToBoxAdapter(
                 child: Padding(
@@ -165,7 +174,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     children: [
                       // Distance Slider replaces Search
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.grey[50],
                           borderRadius: BorderRadius.circular(12),
@@ -200,9 +212,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                                 activeTrackColor: const Color(0xFF3211d4),
                                 inactiveTrackColor: Colors.grey[300],
                                 thumbColor: const Color(0xFF3211d4),
-                                overlayColor: const Color(0xFF3211d4).withValues(alpha: 0.1),
+                                overlayColor: const Color(
+                                  0xFF3211d4,
+                                ).withValues(alpha: 0.1),
                                 trackHeight: 4.0,
-                                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                                thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 8.0,
+                                ),
                               ),
                               child: Slider(
                                 value: _searchRadius,
@@ -226,14 +242,18 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _FilterChip(icon: Icons.check_circle, label: 'Free only', isActive: true),
+                            _FilterChip(
+                              icon: Icons.check_circle,
+                              label: 'Free only',
+                              isActive: true,
+                            ),
                             const SizedBox(width: 8),
                             GestureDetector(
                               onTap: _toggleProximitySort,
                               child: _FilterChip(
-                                icon: Icons.near_me, 
-                                label: 'Nearby', 
-                                isActive: _sortByProximity
+                                icon: Icons.near_me,
+                                label: 'Nearby',
+                                isActive: _sortByProximity,
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -249,7 +269,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
               // Events List Header
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -271,22 +294,33 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
               // Event Items
               eventsAsync.when(
                 data: (events) {
-                  var filteredEvents = events.where((e) => DateUtils.isSameDay(e.startDateTime, _selectedDate)).toList();
-                  
+                  var filteredEvents = events
+                      .where(
+                        (e) =>
+                            DateUtils.isSameDay(e.startDateTime, _selectedDate),
+                      )
+                      .toList();
+
                   // Filter by Distance
                   if (_currentPosition != null) {
                     filteredEvents = filteredEvents.where((e) {
-                      if (e.latitude == null || e.longitude == null) return false;
+                      if (e.latitude == null || e.longitude == null) {
+                        return false;
+                      }
                       final distanceInMeters = Geolocator.distanceBetween(
-                        _currentPosition!.latitude, _currentPosition!.longitude, 
-                        e.latitude!, e.longitude!
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
+                        e.latitude!,
+                        e.longitude!,
                       );
                       return (distanceInMeters / 1000) <= _searchRadius;
                     }).toList();
                   }
 
                   // Ensure chronological sort (primary sort)
-                  filteredEvents.sort((a, b) => a.startDateTime.compareTo(b.startDateTime));
+                  filteredEvents.sort(
+                    (a, b) => a.startDateTime.compareTo(b.startDateTime),
+                  );
 
                   // Sort by proximity if enabled (secondary sort or override?)
                   // User request implies chronological is strict.
@@ -298,24 +332,34 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     filteredEvents.sort((a, b) {
                       if (a.latitude == null || a.longitude == null) return 1;
                       if (b.latitude == null || b.longitude == null) return -1;
-                      
+
                       final distA = Geolocator.distanceBetween(
-                        _currentPosition!.latitude, _currentPosition!.longitude, 
-                        a.latitude!, a.longitude!
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
+                        a.latitude!,
+                        a.longitude!,
                       );
                       final distB = Geolocator.distanceBetween(
-                        _currentPosition!.latitude, _currentPosition!.longitude, 
-                        b.latitude!, b.longitude!
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
+                        b.latitude!,
+                        b.longitude!,
                       );
                       return distA.compareTo(distB);
                     });
                   }
 
                   // Auto-scroll logic to current time
-                  if (_shouldScrollToNow && !_sortByProximity && DateUtils.isSameDay(_selectedDate, DateTime.now())) {
+                  if (_shouldScrollToNow &&
+                      !_sortByProximity &&
+                      DateUtils.isSameDay(_selectedDate, DateTime.now())) {
                     final now = DateTime.now();
                     final firstFutureIndex = filteredEvents.indexWhere((e) {
-                      final end = e.endDateTime ?? e.startDateTime.add(const Duration(hours: 1)); // assume 1h if null
+                      final end =
+                          e.endDateTime ??
+                          e.startDateTime.add(
+                            const Duration(hours: 1),
+                          ); // assume 1h if null
                       return end.isAfter(now);
                     });
 
@@ -323,20 +367,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                       // Schedule scroll after build
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (_scrollController.hasClients) {
-                           // Approx item height + margin = ~110
-                           // List header height = ~250 (DateSelector 90 + Filter 100ish + Header 40)
-                           // We need to account for the Sliver headers above the list.
-                           // Actually, simplest is to scroll relative to list start?
-                           // CustomScrollView with offsets is tricky.
-                           // Let's try a safe estimate.
-                           // Header height is roughly 90 + 130 + 40 = ~260.
-                           double offset = 260.0 + (firstFutureIndex * 116.0); // 116 approx height
-                           
-                           _scrollController.animateTo(
-                             offset, 
-                             duration: const Duration(milliseconds: 500), 
-                             curve: Curves.easeOut,
-                           );
+                          // Approx item height + margin = ~110
+                          // List header height = ~250 (DateSelector 90 + Filter 100ish + Header 40)
+                          // We need to account for the Sliver headers above the list.
+                          // Actually, simplest is to scroll relative to list start?
+                          // CustomScrollView with offsets is tricky.
+                          // Let's try a safe estimate.
+                          // Header height is roughly 90 + 130 + 40 = ~260.
+                          double offset =
+                              260.0 +
+                              (firstFutureIndex * 116.0); // 116 approx height
+
+                          _scrollController.animateTo(
+                            offset,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeOut,
+                          );
                         }
                       });
                     }
@@ -344,22 +390,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     // We need to do this carefully inside the build cycle or callback.
                     // Doing it in callback is safer.
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                         if(mounted) setState(() => _shouldScrollToNow = false);
+                      if (mounted) setState(() => _shouldScrollToNow = false);
                     });
                   } else {
-                     // If not today or sorting by proximity, simplify disable flag
-                     if (_shouldScrollToNow) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                             if(mounted) setState(() => _shouldScrollToNow = false);
-                        });
-                     }
+                    // If not today or sorting by proximity, simplify disable flag
+                    if (_shouldScrollToNow) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) setState(() => _shouldScrollToNow = false);
+                      });
+                    }
                   }
 
                   // Show count
                   // (Ideally we'd update the header count but slivers make it tricky to pass data up easily without Riverpod state)
-                  
+
                   if (filteredEvents.isEmpty) {
-                     return SliverToBoxAdapter(
+                    return SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.all(32.0),
                         child: Center(
@@ -370,8 +416,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                                 const Padding(
                                   padding: EdgeInsets.only(top: 8.0),
                                   child: Text(
-                                    'Waiting for location...', 
-                                    style: TextStyle(fontSize: 12, color: Colors.grey)
+                                    'Waiting for location...',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
                             ],
@@ -381,17 +430,20 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     );
                   }
                   return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return _EventListItem(
-                          event: filteredEvents[index],
-                          isPast: filteredEvents[index].endDateTime != null 
-                              ? filteredEvents[index].endDateTime!.isBefore(DateTime.now())
-                              : filteredEvents[index].startDateTime.add(const Duration(hours: 2)).isBefore(DateTime.now()), // fallback assumption
-                        );
-                      },
-                      childCount: filteredEvents.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return _EventListItem(
+                        event: filteredEvents[index],
+                        isPast: filteredEvents[index].endDateTime != null
+                            ? filteredEvents[index].endDateTime!.isBefore(
+                                DateTime.now(),
+                              )
+                            : filteredEvents[index].startDateTime
+                                  .add(const Duration(hours: 2))
+                                  .isBefore(
+                                    DateTime.now(),
+                                  ), // fallback assumption
+                      );
+                    }, childCount: filteredEvents.length),
                   );
                 },
                 loading: () => const SliverToBoxAdapter(
@@ -407,11 +459,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                   ),
                 ),
               ),
-              
+
               const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
             ],
           ),
-          
+
           // Bottom Navigation
           Positioned(
             left: 0,
@@ -426,15 +478,19 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _NavBarItem(icon: Icons.explore, label: 'Explore', isActive: true),
                   _NavBarItem(
-                    icon: Icons.favorite_border, 
+                    icon: Icons.explore,
+                    label: 'Explore',
+                    isActive: true,
+                  ),
+                  _NavBarItem(
+                    icon: Icons.favorite_border,
                     label: 'Liked',
                     onTap: () => context.push('/liked'),
                   ),
                   _NavBarItem(icon: Icons.calendar_today, label: 'Events'),
                   _NavBarItem(
-                    icon: Icons.settings, 
+                    icon: Icons.settings,
                     label: 'Providers',
                     onTap: () => context.push('/settings'),
                   ),
@@ -457,16 +513,22 @@ class _DateChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    
+
     return Container(
       width: 50,
       decoration: BoxDecoration(
         color: isSelected ? const Color(0xFF3211d4) : Colors.grey[50],
         borderRadius: BorderRadius.circular(16),
         border: isSelected ? null : Border.all(color: Colors.grey[100]!),
-        boxShadow: isSelected 
-          ? [BoxShadow(color: const Color(0xFF3211d4).withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(0, 2))]
-          : null,
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: const Color(0xFF3211d4).withValues(alpha: 0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -499,23 +561,29 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool isActive;
 
-  const _FilterChip({required this.icon, required this.label, this.isActive = false});
+  const _FilterChip({
+    required this.icon,
+    required this.label,
+    this.isActive = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF3211d4).withValues(alpha: 0.1) : Colors.grey[50],
+        color: isActive
+            ? const Color(0xFF3211d4).withValues(alpha: 0.1)
+            : Colors.grey[50],
         borderRadius: BorderRadius.circular(8),
         border: isActive ? null : Border.all(color: Colors.grey[100]!),
       ),
       child: Row(
         children: [
           Icon(
-            icon, 
-            size: 16, 
-            color: isActive ? const Color(0xFF3211d4) : Colors.grey[600]
+            icon,
+            size: 16,
+            color: isActive ? const Color(0xFF3211d4) : Colors.grey[600],
           ),
           const SizedBox(width: 6),
           Text(
@@ -539,8 +607,8 @@ class _NavBarItem extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _NavBarItem({
-    required this.icon, 
-    required this.label, 
+    required this.icon,
+    required this.label,
     this.isActive = false,
     this.onTap,
   });
@@ -551,20 +619,20 @@ class _NavBarItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: color,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
-    ),
+        ],
+      ),
     );
   }
 }
@@ -582,15 +650,27 @@ class _EventListItem extends ConsumerWidget {
 
     final timeFormat = DateFormat('HH:mm');
     final startTime = timeFormat.format(event.startDateTime);
-    final endTime = event.endDateTime != null ? ' - ${timeFormat.format(event.endDateTime!)}' : '';
+    final endTime = event.endDateTime != null
+        ? ' - ${timeFormat.format(event.endDateTime!)}'
+        : '';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6), // Added vertical margin slightly
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 6,
+      ), // Added vertical margin slightly
       decoration: BoxDecoration(
-         color: isPast ? Colors.grey[200] : Colors.white, // In the design the list itself might be white but items are separated
-         borderRadius: BorderRadius.circular(12), // Added radius for better look with background color
-         border: Border.all(color: Colors.grey[100]!), // changed bottom border to full border
-         // box-shadow? maybe
+        color: isPast
+            ? Colors.grey[200]
+            : Colors
+                  .white, // In the design the list itself might be white but items are separated
+        borderRadius: BorderRadius.circular(
+          12,
+        ), // Added radius for better look with background color
+        border: Border.all(
+          color: Colors.grey[100]!,
+        ), // changed bottom border to full border
+        // box-shadow? maybe
       ),
       child: InkWell(
         onTap: () {
@@ -604,115 +684,136 @@ class _EventListItem extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3211d4).withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          '$startTime$endTime',
-                          style: TextStyle(
-                            color: isPast ? Colors.grey[500] : const Color(0xFF3211d4),
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final providersAsync = ref.watch(eventProvidersProvider);
-                          return providersAsync.when(
-                            data: (providers) {
-                              final provider = providers.firstWhere(
-                                (p) => p.id == event.providerId, 
-                                // Create a dummy provider or handle null if preferable, 
-                                // but firstWhere with orElse is safer.
-                                orElse: () => ProviderConfig(
-                                  id: event.providerId, 
-                                  name: event.providerId, // Fallback to ID
-                                  enabled: true, 
-                                  module: '', 
-                                  updateInterval: ''
-                                ),
-                              );
-                              final displayName = provider.name ?? event.providerId;
-                              
-                              return Flexible(
-                                child: Text(
-                                  displayName,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[600],
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              );
-                            },
-                            loading: () => const SizedBox.shrink(),
-                            error: (_, __) => const SizedBox.shrink(),
-                          );
-                        }
-                      ),
-                      const SizedBox(width: 8),
-                      if (event.isFree)
+                    Row(
+                      children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.green[50],
+                            color: const Color(
+                              0xFF3211d4,
+                            ).withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.green[100]!),
                           ),
                           child: Text(
-                            'FREE',
+                            '$startTime$endTime',
                             style: TextStyle(
-                              color: Colors.green[700],
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1,
+                              color: isPast
+                                  ? Colors.grey[500]
+                                  : const Color(0xFF3211d4),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    event.title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: isPast ? Colors.grey[500] : const Color(0xFF0f172a), // slate-900
+                        const SizedBox(width: 8),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final providersAsync = ref.watch(
+                              eventProvidersProvider,
+                            );
+                            return providersAsync.when(
+                              data: (providers) {
+                                final provider = providers.firstWhere(
+                                  (p) => p.id == event.providerId,
+                                  // Create a dummy provider or handle null if preferable,
+                                  // but firstWhere with orElse is safer.
+                                  orElse: () => ProviderConfig(
+                                    id: event.providerId,
+                                    name: event.providerId, // Fallback to ID
+                                    enabled: true,
+                                    module: '',
+                                    updateInterval: '',
+                                  ),
+                                );
+                                final displayName =
+                                    provider.name ?? event.providerId;
+
+                                return Flexible(
+                                  child: Text(
+                                    displayName,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[600],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              },
+                              loading: () => const SizedBox.shrink(),
+                              error: (_, __) => const SizedBox.shrink(),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        if (event.isFree)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green[50],
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: Colors.green[100]!),
+                            ),
+                            child: Text(
+                              'FREE',
+                              style: TextStyle(
+                                color: Colors.green[700],
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 14, color: Colors.grey[400]),
-                      const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      event.locationName ?? event.address ?? 'Unknown Location',
+                    const SizedBox(height: 4),
+                    Text(
+                      event.title,
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[500],
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: isPast
+                            ? Colors.grey[500]
+                            : const Color(0xFF0f172a), // slate-900
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 14,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            event.locationName ??
+                                event.address ??
+                                'Unknown Location',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[500],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            GestureDetector(
+              GestureDetector(
                 onTap: () {
                   ref.read(favoritesProvider.notifier).toggleFavorite(event.id);
                 },
@@ -720,15 +821,15 @@ class _EventListItem extends ConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   color: Colors.transparent, // increase touch area
                   child: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border, 
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: isFavorite ? Colors.red : Colors.grey[300],
                   ),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

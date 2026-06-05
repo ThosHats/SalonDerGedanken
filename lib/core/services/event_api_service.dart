@@ -6,7 +6,7 @@ class EventApiService {
   final Dio _dio;
   
   static String get _baseUrl {
-    return 'https://salondergedanken.bw-papenburg-archiv.de';
+    return 'https://www.qvibe.de';
   }
 
   EventApiService([Dio? dio]) : _dio = dio ?? Dio(BaseOptions(baseUrl: _baseUrl));

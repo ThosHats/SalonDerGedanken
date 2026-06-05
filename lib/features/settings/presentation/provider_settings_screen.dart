@@ -10,10 +10,12 @@ class ProviderSettingsScreen extends ConsumerStatefulWidget {
   const ProviderSettingsScreen({super.key});
 
   @override
-  ConsumerState<ProviderSettingsScreen> createState() => _ProviderSettingsScreenState();
+  ConsumerState<ProviderSettingsScreen> createState() =>
+      _ProviderSettingsScreenState();
 }
 
-class _ProviderSettingsScreenState extends ConsumerState<ProviderSettingsScreen> {
+class _ProviderSettingsScreenState
+    extends ConsumerState<ProviderSettingsScreen> {
   double _distance = 20.0;
   Position? _currentPosition;
 
@@ -69,7 +71,13 @@ class _ProviderSettingsScreenState extends ConsumerState<ProviderSettingsScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Distanz'), // Changed from Radius
-                    Text('${_distance.round()} km', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)), // Changed value display
+                    Text(
+                      '${_distance.round()} km',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ), // Changed value display
                   ],
                 ),
                 Slider(
@@ -99,62 +107,83 @@ class _ProviderSettingsScreenState extends ConsumerState<ProviderSettingsScreen>
               ),
             ),
           ),
-          
+
           providersAsyncValue.when(
-            loading: () => const Center(child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: CircularProgressIndicator(),
-            )),
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(),
+              ),
+            ),
             error: (err, stack) => Center(child: Text('Error: $err')),
             data: (allProviders) {
-               // Filter providers by distance
-               final nearbyProviders = allProviders.where((provider) {
-                 if (_currentPosition == null) return true; // Show all if location unknown? Or hide? 
-                 // Assuming show all if location unknown to avoid empty screen
-                 
-                 if (provider.latitude == null || provider.longitude == null) {
-                   return false; // Hide if no coordinates (per logic discussed)
-                 }
+              // Filter providers by distance
+              final nearbyProviders = allProviders.where((provider) {
+                if (_currentPosition == null) {
+                  return true; // Show all if location unknown? Or hide?
+                }
+                // Assuming show all if location unknown to avoid empty screen
 
-                 final distanceInMeters = Geolocator.distanceBetween(
-                   _currentPosition!.latitude, _currentPosition!.longitude, 
-                   provider.latitude!, provider.longitude!
-                 );
-                 return (distanceInMeters / 1000) <= _distance;
-               }).toList();
+                if (provider.latitude == null || provider.longitude == null) {
+                  return false; // Hide if no coordinates (per logic discussed)
+                }
 
-               if (nearbyProviders.isEmpty) {
-                 return const Padding(
-                   padding: EdgeInsets.all(32.0),
-                   child: Center(child: Text('No providers found within this distance.', style: TextStyle(color: Colors.grey))),
-                 );
-               }
+                final distanceInMeters = Geolocator.distanceBetween(
+                  _currentPosition!.latitude,
+                  _currentPosition!.longitude,
+                  provider.latitude!,
+                  provider.longitude!,
+                );
+                return (distanceInMeters / 1000) <= _distance;
+              }).toList();
 
-               return Container(
+              if (nearbyProviders.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Center(
+                    child: Text(
+                      'No providers found within this distance.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                );
+              }
+
+              return Container(
                 color: Colors.white,
                 child: Column(
                   children: nearbyProviders.map((provider) {
-                    final isEnabled = enabledProviders == null 
-                        ? true 
+                    final isEnabled = enabledProviders == null
+                        ? true
                         : enabledProviders.contains(provider.id);
-                        
+
                     return Column(
                       children: [
                         ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
                           leading: Switch(
                             value: isEnabled,
-                            activeColor: const Color(0xFF3211d4),
+                            activeThumbColor: const Color(0xFF3211d4),
                             onChanged: (val) {
                               var current = ref.read(enabledProvidersProvider);
-                              if (current == null) {
-                                  current = allProviders.map((p) => p.id).toSet();
-                              }
-                              
+                              current ??= allProviders.map((p) => p.id).toSet();
+
                               if (val) {
-                                ref.read(enabledProvidersProvider.notifier).state = {...current, provider.id};
+                                ref
+                                    .read(enabledProvidersProvider.notifier)
+                                    .state = {
+                                  ...current,
+                                  provider.id,
+                                };
                               } else {
-                                ref.read(enabledProvidersProvider.notifier).state = current.difference({provider.id});
+                                ref
+                                    .read(enabledProvidersProvider.notifier)
+                                    .state = current.difference({
+                                  provider.id,
+                                });
                               }
                             },
                           ),
@@ -162,15 +191,25 @@ class _ProviderSettingsScreenState extends ConsumerState<ProviderSettingsScreen>
                             provider.name ?? provider.id,
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          subtitle: Text(provider.region ?? provider.address ?? 'Cloud Provider'),
-                          trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                          subtitle: Text(
+                            provider.region ??
+                                provider.address ??
+                                'Cloud Provider',
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                           onTap: () {
-                             // Navigate to Provider Events Screen
-                             Navigator.of(context).push(
-                               MaterialPageRoute(
-                                 builder: (context) => ProviderEventsScreen(providerId: provider.id),
-                               ),
-                             );
+                            // Navigate to Provider Events Screen
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ProviderEventsScreen(
+                                  providerId: provider.id,
+                                ),
+                              ),
+                            );
                           },
                         ),
                         if (provider != nearbyProviders.last)
